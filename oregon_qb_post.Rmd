@@ -220,7 +220,7 @@ __TDs & Interceptions__
 
 As before, we move onto passing and rushing TDs and interceptions per game. 
 
-```{r pass-rush-tds-ints-game, fig.height=save.height}
+```{r pass-rush-tds-ints-game, fig.height=2*save.height}
 pass.tds.data <- qbs.sigAtt.data
 wtd.pass.tds <- data.frame(NULL)
 for(qb.name in levels(pass.tds.data$qb)) {
@@ -322,7 +322,7 @@ __Completion percentage__
 
 Here we have a stat that doesn't have a cumulative counterpart: completion percentage for each game.
 
-```{r comp-pc-game}
+```{r comp-pc-game, fig.width=0.6*save.width}
 comp.pc.data <- qbs.sigAtt.data
 wtd.comp.pc <- data.frame(NULL)
 for(qb.name in levels(comp.pc.data$qb)) {
