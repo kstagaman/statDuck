@@ -5,5 +5,10 @@ navbar:
   left:
     - text: "Home"
       href: index.html
-    - text: "Aboot"
+    - text: "About"
       href: about.html
+      - text: "Statistics"
+      icon: fa-gear
+      menu:
+        - text: "QBs"
+          href: oregon_qbs_post.html
