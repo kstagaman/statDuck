@@ -11,4 +11,4 @@ navbar:
       icon: fa-gear
       menu:
         - text: "QBs"
-          href: oregon_qbs_post.html
+          href: oregon_qb_post.html
