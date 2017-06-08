@@ -1,0 +1,435 @@
+---
+title: "Oregon Ducks QB career stats from 2002 to 2016"
+output: 
+  html_document: 
+    keep_md: yes
+---
+
+```{r chunk_opts, echo=FALSE}
+save.width <- 8
+save.height <- 6
+library(knitr)
+opts_chunk$set(message=FALSE, 
+               warning=FALSE, 
+               highlight=TRUE,
+               fig.height=save.height,
+               fig.width=save.width,
+               cache=FALSE,
+               echo=FALSE)
+```
+
+```{r libraries-and-data}
+library(RColorBrewer)
+library(ggplot2)
+theme_set(theme_bw())
+library(Hmisc)
+library(doBy)
+library(gridExtra)
+library(reshape2)
+source("Helpful_scripts/mgsub.R")
+
+# Read in all data
+all.qbs <- read.table("oregon_qb_stats.txt",
+                      sep="\t",
+                      header=TRUE,
+                      fill=TRUE)
+
+sig.game.shps <- c(16, 1)
+
+# I originally randomly drew colors until I found a set I liked.
+# The following makes sure I get those colors again.
+set.seed(12)
+color.set <- sample(c(brewer.pal(9, "Set1"), brewer.pal(8, "Dark2")), 12)
+color.set <- rev(color.set)
+brewer.Paired <- brewer.pal(12, "Paired")
+color.set[8] <- brewer.Paired[3]
+jw <- 0.2
+
+# Determine how many total pass attempts per QB, and
+# then remove QBs with less than 100 total pass attempts.
+max.cumPassAtt <- summaryBy(cum.pass.atts ~ qb, data=all.qbs, FUN=max)
+qbs.sigAtt <- as.character(subset(max.cumPassAtt, cum.pass.atts.max >= 100)$qb)
+qbs.sigAtt.data <- droplevels(subset(all.qbs, qb %in% qbs.sigAtt))
+
+# Defining a game with significant attempts at 10.
+sig.atts <- 10
+qbs.sigAtt.data$sig.game <- factor(ifelse(qbs.sigAtt.data$pass.atts >= sig.atts,
+                                   paste("≥", sig.atts, " Pass Atts", sep=""),
+                                   paste("<", sig.atts, " Pass Atts", sep="")),
+                                   levels=c(paste("≥", sig.atts, " Pass Atts", sep=""),
+                                            paste("<", sig.atts, " Pass Atts", sep="")))
+qb.cols <- data.frame("qb"=levels(qbs.sigAtt.data$qb), "col"=color.set)
+qb.cols$col <- as.character(qb.cols$col)
+```
+
+The 2016-17 was a bummer, but stats are fun. (Right? I'm not the only who thinks that?) So I decided to take a look back over the program as far as I could. I was basically only limited by how readily available these stats were available online, which let me go back to 2002 (earliest game data available on ESPN). Despite that, starting in 2002 seems like a reasonable window to make comparisons between players without running into issues of major differences in football rules or player training practices.
+
+The first thing I wanted to do was get an idea of what each quarterback had done over the course of their entire career by looking at their cumulative stats. I then go on to look at stats on a per game and per attempt/carry basis. I excluded any QB that had fewer than 100 pass attempts. This was mostly for visualization reasons, as too many QBs made it hard to see what was going on, plus it excluded many QBs that probably weren't that interesting to compare in the first place. I have the data, though, should you be interested.
+
+## Cumulative Stats
+
+__Passing and Rushing Yards__
+
+Cumulative stats can be hard to compare because each QB played a different number of games, but it's a good first step to get an idea of what each player did over the course of his career. The figure below show cumulative passing (top) and rushing (bottom) yards for the twelve QBs covered in this analysis. Solid circles indicate games in which the QB made at least 10 pass attempts, open circles are games in which he made fewer than 10. Like the 100 total pass attempts above, this was a rather arbitrary cutoff, but at least to my eye, it seemed to line up pretty well with whether or not that QB had the majority of reps for the game. 
+
+```{r cum-yards}
+cum.pass.rush.yds <- melt(qbs.sigAtt.data,
+                          measure.vars=c("cum.pass.yds", "cum.rush.yds"),
+                          variable.name="cum.yds.type",
+                          value.name="cum.yds")
+cum.pass.rush.yds$cum.yds.type <- factor(mgsub(c("cum.pass.yds", "cum.rush.yds"),
+                                               c("Passing", "Rushing"),
+                                               cum.pass.rush.yds$cum.yds.type))
+
+# Plotting cumulative passing and rushing yards over the career of each QB.
+ggplot(data=cum.pass.rush.yds, aes(x=game.num, y=cum.yds, color=qb, shape=sig.game)) +
+    geom_line(aes(group=qb)) +
+    geom_point() +
+    scale_color_manual(name="QB", values=qb.cols$col) +
+    scale_shape_manual(name="Pass Atts/Game", values=sig.game.shps) +
+    facet_wrap(~ cum.yds.type, scale="free_y", ncol=1) +
+    labs(x="Game #", y="Cumulative Yds")
+```
+
+Obviously, Mariota's line (medium green) stands out, both because of his total passing and rushing yards, but also because he played the most games for Oregon over the course of his career. Furthermore, other QBs had similar rates of passing yards later in their careers (Thomas, Clemens, Dixon), but because their early production was so much lower than Mariota's they just can't catch up. A last note on cumulative passing yards, Adams looked on track to beat Mariota, even with his injuries, but, alas, we only had him for a year (and of course he wasn't starting as a red-shirt freshman). 
+
+Where Mariota really stands out is in cumulative rushing yards. The only QB that keeps pace with Mariota is Masoli, but as you might recall, his career at Oregon was cut short by some poor decisions. Darron Thomas has an interesting trajectory, gaining rushing yards pretty quickly through his first 14 games and then going to a much slower rate.
+
+__TDs & Interceptions__
+
+The next figure show the accumulation of rushing TDs, passing TDs, and interceptions for each QB. 
+
+```{r cum-tds-ints}
+cum.tds.ints <- melt(qbs.sigAtt.data,
+                     measure.vars=c("cum.pass.tds", "cum.ints", "cum.rush.tds"),
+                     variable.name="cum.result.type",
+                     value.name="cum.tds.ints")
+cum.tds.ints$cum.result.type <- factor(mgsub(c("cum.pass.tds", "cum.ints", "cum.rush.tds"),
+                                             c("Passing TDs", "Interceptions", "Rushing TDs"),
+                                             cum.tds.ints$cum.result.type),
+                                       levels=c("Rushing TDs", "Passing TDs", "Interceptions"))
+
+# Plotting cumulative TDs (rushing & passing) and interceptions over the career of each QB.
+ggplot(data=cum.tds.ints, aes(x=game.num, y=cum.tds.ints, color=qb, shape=sig.game)) +
+    geom_line(aes(group=qb)) +
+    geom_point() +
+    scale_color_manual(name="QB", values=qb.cols$col) +
+    scale_shape_manual(name="Pass Atts/Game", values=sig.game.shps) +
+    facet_wrap(~ cum.result.type, scale="free_y", ncol=1) +
+    labs(x="Game #", y="Cumulative TDs/Ints")
+```
+
+Mariota may have accumulated a very similar number of rushing yards as Masoli over a similar number of games (previous figure), but Masoli was clearly on pace to have the most rushing TDs of any Oregon QB. Also, that stretch from game 20 to 27 in which Mariota didn't score a single rushing TD was the second half of the 2013-2014 season (his 20th game was against WSU) to the first game of the 2014 season (against Michigan State).
+
+Lastly for cumulative stats, we see just how few interceptions Mariota accumulated over the course of his career, especially compared to the other QBs who amassed decent passing yards and TDs like Clemens, Dixon, and Thomas. This is further highlighted by the following graph, which plots cumulative passing TDs vs cumulative interceptions.
+
+```{r passTds-vs-ints}
+ggplot(data=qbs.sigAtt.data, aes(x=cum.pass.tds, y=cum.ints, color=qb, shape=sig.game)) +
+    geom_line(aes(group=qb)) +
+    geom_point() + 
+    # stat_smooth(aes(color=qb), method="lm", se=FALSE) + 
+    scale_color_manual(name="QB", values=qb.cols$col) +
+    scale_shape_manual(name="Pass Atts/Game", values=sig.game.shps) +
+    labs(x="Cumulative Passing TDs", y="Cumulative Interceptions")
+
+# td.v.ints.lm <- lm(cum.ints ~ qb/cum.pass.tds, data=qbs.sigAtt.data)
+# summary(td.v.ints.lm)
+```
+
+## Per Game Stats
+
+As I mentioned above, it's hard to compare cumulative stats between QBs when you have such a variation in how many total games they played. So, let's look at their production on a per game basis. All the following figures will have the same following attributes:
+
+- QB name will be on the x-axis (colors will match what was used above)
+- Each point represents the given stat for a single game
+- A point's size is relative to the total number of attempts or carries for that game
+- The black set of error bar represents the stand error around the mean for all games combined. _Importantly, games with more attempts were given greater weight in order to downweight games in which a QB only had a few attempts._
+
+__Passing and Rushing Yards__
+
+The following figures show the passing and rushing yards per game for each QB. If you were to calculate a regression line for the cumulative yards graphs above, the slope of that line should roughly correspond to the mean presented here (roughly because of the aforementioned weighting by attempts/carries).
+
+```{r pass-rush-yds-game}
+pass.yds.data <- qbs.sigAtt.data
+wtd.pass.yds <- data.frame(NULL)
+for(qb.name in levels(pass.yds.data$qb)) {
+    qb.data <- subset(pass.yds.data, qb==qb.name)
+    wtd.df <- data.frame("qb"=qb.name,
+                         "pass.yds.wtd.mean"=wtd.mean(qb.data$pass.yds,
+                                                      weights=qb.data$pass.atts, na.rm=T),
+                         "pass.yds.wtd.var"=wtd.var(qb.data$pass.yds,
+                                                    weights=qb.data$pass.atts, na.rm=T),
+                         "pass.yds.length"=length(qb.data$pass.yds))
+    wtd.pass.yds <- rbind(wtd.pass.yds, wtd.df)
+}
+wtd.pass.yds$pass.yds.wtd.se <- sqrt(wtd.pass.yds$pass.yds.wtd.var/wtd.pass.yds$pass.yds.length)
+pass.sort.order <- order(wtd.pass.yds$pass.yds.wtd.mean)
+pass.yds.data$qb <- factor(pass.yds.data$qb,
+                           levels=levels(wtd.pass.yds$qb)[pass.sort.order])
+
+pass.yds.game <- ggplot(data=pass.yds.data) +
+    geom_point(aes(x=qb, y=pass.yds, size=pass.atts, fill=qb),
+               shape=21, color="grey", position=position_jitter(width=jw, height=0)) +
+    geom_errorbar(data=wtd.pass.yds,
+                  aes(ymin=pass.yds.wtd.mean - pass.yds.wtd.se,
+                      ymax=pass.yds.wtd.mean + pass.yds.wtd.se,
+                      x=qb),
+                  size=1) +
+    scale_fill_manual(name="QB", values=qb.cols$col[pass.sort.order], guide=F) +
+    scale_size_continuous(name="Attempts/Game") +
+    labs(x="QB", y="Passing Yds/Game") + 
+    theme(axis.text.x=element_text(angle=30, hjust=1),
+          legend.position="top")
+
+rush.yds.data <- qbs.sigAtt.data
+wtd.rush.yds <- data.frame(NULL)
+for(qb.name in levels(rush.yds.data$qb)) {
+    qb.data <- subset(rush.yds.data, qb==qb.name)
+    wtd.df <- data.frame("qb"=qb.name,
+                         "rush.yds.wtd.mean"=wtd.mean(qb.data$rush.yds,
+                                                      weights=qb.data$carries, na.rm=T),
+                         "rush.yds.wtd.var"=wtd.var(qb.data$rush.yds,
+                                                    weights=qb.data$carries, na.rm=T),
+                         "rush.yds.length"=length(qb.data$rush.yds))
+    wtd.rush.yds <- rbind(wtd.rush.yds, wtd.df)
+}
+wtd.rush.yds$rush.yds.wtd.se <- sqrt(wtd.rush.yds$rush.yds.wtd.var/wtd.rush.yds$rush.yds.length)
+rush.sort.order <- order(wtd.rush.yds$rush.yds.wtd.mean)
+rush.yds.data$qb <- factor(rush.yds.data$qb,
+                           levels=levels(wtd.rush.yds$qb)[rush.sort.order])
+
+rush.yds.game <- ggplot(data=rush.yds.data) +
+    geom_point(aes(x=qb, y=rush.yds, size=carries, fill=qb),
+               shape=21, color="grey", position=position_jitter(width=jw, height=0)) +
+    geom_errorbar(data=wtd.rush.yds,
+                  aes(ymin=rush.yds.wtd.mean - rush.yds.wtd.se,
+                      ymax=rush.yds.wtd.mean + rush.yds.wtd.se,
+                      x=qb),
+                  size=1) +
+    scale_fill_manual(name="QB", values=qb.cols$col[rush.sort.order], guide=F) +
+    scale_size_continuous(name="Carries/Game") +
+    labs(x="QB", y="Rushing Yds/Game") +
+    theme(axis.text.x=element_text(angle=30, hjust=1),
+          legend.position="top")
+grid.arrange(pass.yds.game, rush.yds.game, nrow=1)
+```
+
+Maybe a little surprising is that Mariota is not top dog on either graph here. Both Adams and (encouragingly) Herbert, have slightly higher passing yards per game than Mariota, though I didn't do the stats to determine if they're significantly higher. Herbert, in particular, has quite a variation given the small number of games he's played, but maybe that should be expected from a true freshman in his first year. Only time will tell.
+
+Of course, only Masoli had more rushing yards per game, on average, than Mariota, and Herbert is right in the middle of the pack. We'll see if that changes with Taggart's offense.
+
+__TDs & Interceptions__
+
+As before, we move onto passing and rushing TDs and interceptions per game. 
+
+```{r pass-rush-tds-ints-game, fig.height=2*save.height}
+pass.tds.data <- qbs.sigAtt.data
+wtd.pass.tds <- data.frame(NULL)
+for(qb.name in levels(pass.tds.data$qb)) {
+    qb.data <- subset(pass.tds.data, qb==qb.name)
+    wtd.df <- data.frame("qb"=qb.name,
+                         "pass.tds.wtd.mean"=wtd.mean(qb.data$pass.tds,
+                                                      weights=qb.data$pass.atts, na.rm=T),
+                         "pass.tds.wtd.var"=wtd.var(qb.data$pass.tds,
+                                                    weights=qb.data$pass.atts, na.rm=T),
+                         "pass.tds.length"=length(qb.data$pass.tds))
+    wtd.pass.tds <- rbind(wtd.pass.tds, wtd.df)
+}
+wtd.pass.tds$pass.tds.wtd.se <- sqrt(wtd.pass.tds$pass.tds.wtd.var/wtd.pass.tds$pass.tds.length)
+pass.sort.order <- order(wtd.pass.tds$pass.tds.wtd.mean)
+pass.tds.data$qb <- factor(pass.tds.data$qb,
+                           levels=levels(wtd.pass.tds$qb)[pass.sort.order])
+
+pass.tds.game <- ggplot(data=pass.tds.data) +
+    geom_point(aes(x=qb, y=pass.tds, size=pass.atts, fill=qb),
+               shape=21, color="grey", position=position_jitter(width=jw, height=0)) +
+    geom_errorbar(data=wtd.pass.tds,
+                  aes(ymin=pass.tds.wtd.mean - pass.tds.wtd.se,
+                      ymax=pass.tds.wtd.mean + pass.tds.wtd.se,
+                      x=qb),
+                  size=1) +
+    scale_fill_manual(name="QB", values=qb.cols$col[pass.sort.order], guide=F) +
+    scale_size_continuous(name="Attempts/Game") +
+    labs(x="QB", y="Passing TDs/Game") +
+    theme(axis.text.x=element_text(angle=30, hjust=1), 
+          legend.position="top")
+
+rush.tds.data <- qbs.sigAtt.data
+wtd.rush.tds <- data.frame(NULL)
+for(qb.name in levels(rush.tds.data$qb)) {
+    qb.data <- subset(rush.tds.data, qb==qb.name)
+    wtd.df <- data.frame("qb"=qb.name,
+                         "rush.tds.wtd.mean"=wtd.mean(qb.data$rush.tds,
+                                                      weights=qb.data$carries, na.rm=T),
+                         "rush.tds.wtd.var"=wtd.var(qb.data$rush.tds,
+                                                    weights=qb.data$carries, na.rm=T),
+                         "rush.tds.length"=length(qb.data$rush.tds))
+    wtd.rush.tds <- rbind(wtd.rush.tds, wtd.df)
+}
+wtd.rush.tds$rush.tds.wtd.se <- sqrt(wtd.rush.tds$rush.tds.wtd.var/wtd.rush.tds$rush.tds.length)
+rush.sort.order <- order(wtd.rush.tds$rush.tds.wtd.mean)
+rush.tds.data$qb <- factor(rush.tds.data$qb,
+                           levels=levels(wtd.rush.tds$qb)[rush.sort.order])
+
+rush.tds.game <- ggplot(data=rush.tds.data) +
+    geom_point(aes(x=qb, y=rush.tds, size=carries, fill=qb),
+               shape=21, color="grey", position=position_jitter(width=jw, height=0)) +
+    geom_errorbar(data=wtd.rush.tds,
+                  aes(ymin=rush.tds.wtd.mean - rush.tds.wtd.se,
+                      ymax=rush.tds.wtd.mean + rush.tds.wtd.se,
+                      x=qb),
+                  size=1) +
+    scale_fill_manual(name="QB", values=qb.cols$col[rush.sort.order], guide=F) +
+    scale_size_continuous(name="Carries/Game") +
+    labs(x="QB", y="Rushing TDs/Game") +
+    theme(axis.text.x=element_text(angle=30, hjust=1), 
+          legend.position="top")
+
+ints.data <- qbs.sigAtt.data
+wtd.ints <- data.frame(NULL)
+for(qb.name in levels(ints.data$qb)) {
+    qb.data <- subset(ints.data, qb==qb.name)
+    wtd.df <- data.frame("qb"=qb.name,
+                         "ints.wtd.mean"=wtd.mean(qb.data$ints,
+                                                      weights=qb.data$pass.atts, na.rm=T),
+                         "ints.wtd.var"=wtd.var(qb.data$ints,
+                                                    weights=qb.data$pass.atts, na.rm=T),
+                         "ints.length"=length(qb.data$ints))
+    wtd.ints <- rbind(wtd.ints, wtd.df)
+}
+wtd.ints$ints.wtd.se <- sqrt(wtd.ints$ints.wtd.var/wtd.ints$ints.length)
+ints.sort.order <- order(wtd.ints$ints.wtd.mean)
+ints.data$qb <- factor(ints.data$qb,
+                           levels=levels(wtd.ints$qb)[ints.sort.order])
+
+ints.game <- ggplot(data=ints.data) +
+    geom_point(aes(x=qb, y=ints, size=pass.atts, fill=qb),
+               shape=21, color="grey", position=position_jitter(width=jw, height=0)) +
+    geom_errorbar(data=wtd.ints,
+                  aes(ymin=ints.wtd.mean - ints.wtd.se,
+                      ymax=ints.wtd.mean + ints.wtd.se,
+                      x=qb),
+                  size=1) +
+    scale_fill_manual(name="QB", values=qb.cols$col[ints.sort.order], guide=F) +
+    scale_size_continuous(name="Attempts/Game") +
+    labs(x="QB", y="Interceptions/Game") +
+    theme(axis.text.x=element_text(angle=30, hjust=1), 
+          legend.position="none")
+grid.arrange(pass.tds.game, rush.tds.game, ints.game, nrow=2)
+```
+
+Again, somewhat encouraging for our current situation, Herbert is up there with Mariota and Adams. Masoli is the run king, and Prukop threw fewer interceptions than I remember (though these stats are not good for showing the impact of those interceptions on a game).
+
+__Completion percentage__
+
+Here we have a stat that doesn't have a cumulative counterpart: completion percentage for each game.
+
+```{r comp-pc-game, fig.width=0.7*save.width}
+comp.pc.data <- qbs.sigAtt.data
+wtd.comp.pc <- data.frame(NULL)
+for(qb.name in levels(comp.pc.data$qb)) {
+    qb.data <- subset(comp.pc.data, qb==qb.name)
+    wtd.df <- data.frame("qb"=qb.name,
+                         "comp.pc.wtd.mean"=wtd.mean(qb.data$comps/qb.data$pass.atts,
+                                                      weights=qb.data$pass.atts, na.rm=T),
+                         "comp.pc.wtd.var"=wtd.var(qb.data$comps/qb.data$pass.atts,
+                                                    weights=qb.data$pass.atts, na.rm=T),
+                         "comp.pc.length"=length(qb.data$comps))
+    wtd.comp.pc <- rbind(wtd.comp.pc, wtd.df)
+}
+wtd.comp.pc$comp.pc.wtd.se <- sqrt(wtd.comp.pc$comp.pc.wtd.var/wtd.comp.pc$comp.pc.length)
+sort.order <- order(wtd.comp.pc$comp.pc.wtd.mean)
+comp.pc.data$qb <- factor(comp.pc.data$qb,
+                             levels=levels(wtd.comp.pc$qb)[sort.order])
+
+ggplot(data=comp.pc.data) +
+    geom_point(aes(x=qb, y=comps/pass.atts, size=pass.atts, fill=qb),
+               shape=21, color="grey", position=position_jitter(width=jw, height=0)) +
+    geom_errorbar(data=wtd.comp.pc,
+                  aes(ymin=comp.pc.wtd.mean - comp.pc.wtd.se,
+                      ymax=comp.pc.wtd.mean + comp.pc.wtd.se,
+                      x=qb),
+                  size=1) +
+    scale_fill_manual(name="QB", values=qb.cols$col[sort.order], guide=F) +
+    scale_size_continuous(name="Attempts/Game") +
+    labs(x="QB", y="Completion %") +
+    theme(axis.text.x=element_text(angle=30, hjust=1))
+```
+
+Hey look, Mariota is back on top. Most surprisingly, Prukop and Lockie were much higher than I expected. Again, I didn't do proper stats, but a good rule of thumb is if the standard error intervals don't overlap there's probably a statistically significant difference. That puts Herbert, Dixon, Lockie, Adams, Prukop, and Mariota all at similar completion percentages per game. Huh.
+
+## Per Attempt Stats
+
+__Passing and Rushing Yards__
+
+The figure below shows the average yards gained _per attempt_ in each game for each QB. So, each point still represents a single game, as in the figures above. Again, the error bars were calculated by giving greater weight to games with more attempts/carries.
+
+```{r pass-rush-yds-att}
+yds.att.data <- qbs.sigAtt.data
+wtd.yds.att <- data.frame(NULL)
+for(qb.name in levels(yds.att.data$qb)) {
+    qb.data <- subset(yds.att.data, qb==qb.name)
+    wtd.df <- data.frame("qb"=qb.name,
+                         "yds.att.wtd.mean"=wtd.mean(qb.data$pass.yds/qb.data$pass.atts,
+                                                     weights=qb.data$pass.atts, na.rm=T),
+                         "yds.att.wtd.var"=wtd.var(qb.data$pass.yds/qb.data$pass.atts,
+                                                   weights=qb.data$pass.atts, na.rm=T),
+                         "yds.att.length"=length(qb.data$pass.yds))
+    wtd.yds.att <- rbind(wtd.yds.att, wtd.df)
+}
+wtd.yds.att$yds.att.wtd.se <- sqrt(wtd.yds.att$yds.att.wtd.var/wtd.yds.att$yds.att.length)
+pass.sort.order <- order(wtd.yds.att$yds.att.wtd.mean)
+yds.att.data$qb <- factor(yds.att.data$qb,
+                          levels=levels(wtd.yds.att$qb)[pass.sort.order])
+
+pass.yds.att <- ggplot(data=yds.att.data) +
+    geom_point(aes(x=qb, y=pass.yds/pass.atts, size=pass.atts, fill=qb),
+               shape=21, color="grey", position=position_jitter(width=jw, height=0)) +
+    geom_errorbar(data=wtd.yds.att,
+                  aes(ymin=yds.att.wtd.mean - yds.att.wtd.se,
+                      ymax=yds.att.wtd.mean + yds.att.wtd.se,
+                      x=qb),
+                  size=1) +
+    scale_fill_manual(name="QB", values=qb.cols$col[pass.sort.order], guide=F) +
+    scale_size_continuous(name="Attempts/Game") +
+    labs(x="QB", y="Yards/Pass Attempt") +
+    theme(axis.text.x=element_text(angle=30, hjust=1),
+          legend.position="top")
+
+yds.car.data <- qbs.sigAtt.data
+wtd.yds.car <- data.frame(NULL)
+for(qb.name in levels(yds.car.data$qb)) {
+    qb.data <- subset(yds.car.data, qb==qb.name)
+    wtd.df <- data.frame("qb"=qb.name,
+                         "yds.car.wtd.mean"=wtd.mean(qb.data$rush.yds/qb.data$carries,
+                                                     weights=qb.data$carries, na.rm=T),
+                         "yds.car.wtd.var"=wtd.var(qb.data$rush.yds/qb.data$carries,
+                                                   weights=qb.data$carries, na.rm=T),
+                         "yds.car.length"=length(qb.data$rush.yds))
+    wtd.yds.car <- rbind(wtd.yds.car, wtd.df)
+}
+wtd.yds.car$yds.car.wtd.se <- sqrt(wtd.yds.car$yds.car.wtd.var/wtd.yds.car$yds.car.length)
+rush.sort.order <- order(wtd.yds.car$yds.car.wtd.mean)
+yds.car.data$qb <- factor(yds.car.data$qb,
+                          levels=levels(wtd.yds.car$qb)[rush.sort.order])
+
+rush.yds.att <- ggplot(data=yds.car.data) +
+    geom_point(aes(x=qb, y=rush.yds/carries, size=carries, fill=qb),
+               shape=21, color="grey", position=position_jitter(width=jw, height=0)) +
+    geom_errorbar(data=wtd.yds.car,
+                  aes(ymin=yds.car.wtd.mean - yds.car.wtd.se,
+                      ymax=yds.car.wtd.mean + yds.car.wtd.se,
+                      x=qb),
+                  size=1) +
+    scale_fill_manual(name="QB", values=qb.cols$col[rush.sort.order], guide=F) +
+    scale_size_continuous(name="Attempts/Game") +
+    labs(x="QB", y="Yards/Carry") +
+    theme(axis.text.x=element_text(angle=30, hjust=1),
+          legend.position="top")
+
+grid.arrange(pass.yds.att, rush.yds.att, nrow=1)
+```
+
+These stats are not too surprising. Herbert is right in the middle of the pack for both stats, so it will be interesting to see if that changes much through the course of this year. We see that Mariota averaged more than 5 yards per carry, which is quite impressive, and Vernon Adams averaged right around 10 yards per pass attempt, which is really just astounding to me. This, along with all the previous stats really highlights what many already knew, that Adams and Masoli are basically opposites in terms of QB style, and Mariota did really have it all.
+
+So that's it for the 2002-2016 Oregon quarterbacks. I will do my best to update this in a timely matter by the end of the upcoming season. Sco' Ducks!
