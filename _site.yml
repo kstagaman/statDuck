@@ -7,14 +7,9 @@ navbar:
       href: index.html
     - text: "About"
       href: about.html
-    - text: "Statistics"
-      menu:
-        - text: "Oregon QBs"
-          href: oregon_qb_post.html
+    - text: "Oregon QB Stats"
+      href: oregon_qb_post.html
   right:
     - icon: fa-github fa-lg
       href: https://github.com/kstagaman/statDuck
-output:
-  html_document:
-    theme: flatly
-    highlight: textmate
+      
