@@ -11,5 +11,5 @@ navbar:
         - text: "QBs"
           href: oregon_qb_post.html
 right:
-    - icon: fa-github fa-lg
+    - icon: fa-github
       href: https://github.com/kstagaman/statduck

@@ -322,7 +322,7 @@ __Completion percentage__
 
 Here we have a stat that doesn't have a cumulative counterpart: completion percentage for each game.
 
-```{r comp-pc-game, fig.width=0.6*save.width}
+```{r comp-pc-game, fig.width=0.7*save.width}
 comp.pc.data <- qbs.sigAtt.data
 wtd.comp.pc <- data.frame(NULL)
 for(qb.name in levels(comp.pc.data$qb)) {
@@ -360,7 +360,7 @@ Hey look, Mariota is back on top. Most surprisingly, Prukop and Lockie were much
 
 __Passing and Rushing Yards__
 
-
+The figure below shows the average yards gained _per attempt_ in each game for each QB. So, each point still represents a single game, as in the figures above. Again, the errorbars were calculated by giving greater weight to games with more attempts/carries.
 
 ```{r pass-rush-yds-att}
 yds.att.data <- qbs.sigAtt.data
@@ -427,4 +427,6 @@ rush.yds.att <- ggplot(data=yds.car.data) +
 
 grid.arrange(pass.yds.att, rush.yds.att, nrow=1)
 ```
+
+These stats are not too surprising. Herbert is right in the middle of the pack for both stats, so it will be interesting to see if that changes much through the course of this year. We see that Mariota averaged more than 5 yards per carry, which is quite impressive, and Vernon Adams averaged right around 10 yards per pass attempt, which is really just astounding to me. This, along with all the previous stats really highlights what many already knew, that Adams and Masoli are basically opposites in terms of QB style, and Mariota did really have it all.
 
