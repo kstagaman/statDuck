@@ -13,5 +13,5 @@ navbar:
         - text: "RBs"
           href: oregon_rb_post.html
   right:
-    - icon: fa-github
+    - icon: fa-github fa-lg
       href: https://github.com/kstagaman/statduck
