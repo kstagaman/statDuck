@@ -4,11 +4,12 @@ navbar:
   title: "statDuck"
   left:
     - text: "Home"
+      icon: fa-home
       href: index.html
-    - text: "About"
-      href: about.html
     - text: "Statistics"
-      icon: fa-gear
       menu:
         - text: "QBs"
           href: oregon_qb_post.html
+right:
+    - icon: fa-github fa-lg
+      href: https://github.com/kstagaman/statduck
