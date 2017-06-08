@@ -10,6 +10,8 @@ navbar:
       menu:
         - text: "QBs"
           href: oregon_qb_post.html
+        - text: "RBs"
+          href: oregon_rb_post.html
 right:
     - icon: fa-github
       href: https://github.com/kstagaman/statduck

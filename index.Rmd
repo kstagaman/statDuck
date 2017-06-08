@@ -3,3 +3,13 @@ title: "Welcome to statDuck"
 ---
 
 Hello! I'm a postdoctoral researcher in biology, with an avid enthusiasm for my Oregon Ducks. I use R for statistics and data visualization in my daily work, but when I have time, I like to learn new things in R by messing around with some Ducks sports stats. This is where I've decided to put the stuff I've done that I think other people might be interested. I hope you enjoy it.
+
+
+```{r oregon_o, fig.width=8, fig.height=6.592, echo=FALSE}
+library(ggplot2)
+theme_set(theme_bw())
+o.coords <- read.table("~/Desktop/oregon_O_coords.txt", header=TRUE)
+o.coords$type <- factor(o.coords$type, levels=c("outer", "inner"))
+
+ggplot() + geom_polygon(aes(x=x, y=y, fill=type), data=o.coords) + scale_fill_manual(values=c("#154733", "white"), guide=FALSE)
+```

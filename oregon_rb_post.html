@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Keaton Stagaman" />
+
+
+<title>Oregon Ducks RB career stats from 2002 to 2016</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-1.1/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-1.1/highlight.js"></script>
+<link href="site_libs/font-awesome-4.5.0/css/font-awesome.min.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">statDuck</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">
+    <span class="fa fa-home"></span>
+     
+    Home
+  </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Statistics
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="oregon_qb_post.html">QBs</a>
+    </li>
+    <li>
+      <a href="oregon_rb_post.html">RBs</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Oregon Ducks RB career stats from 2002 to 2016</h1>
+<h4 class="author"><em>Keaton Stagaman</em></h4>
+<h4 class="date"><em>November 5, 2016</em></h4>
+
+</div>
+
+
+<p>This analysis looks at Oregon running backs from 2002 to 2016, just as I did for quarterback. The following analysis follows a very similar structure.</p>
+<div id="cumulative-stats" class="section level2">
+<h2>Cumulative Stats</h2>
+<p><strong>Rushing Yards and Carries</strong></p>
+<p>As I mentioned in the QB post, cumulative stats can be hard to compare because each RB played a different number of games, but it’s a good first step to get an idea of what each player did over the course of his career. The figure below show cumulative rushing yards (top) and carries (bottom) for the twelve RBs covered in this analysis. Solid circles indicate games in which the RB had at least 10 carries, open circles are games in which he had fewer than 10.</p>
+<p><img src="oregon_rb_post_files/figure-html/cum-yards-1.png" width="768" /></p>
+<p>In terms of both total yards and total carries, the two that stand out are LaMichael James and Royce Freeman. No big surprise there. Kenjon Barner sticking around for another year got him over the 3,000 yards mark.</p>
+<p><strong>TDs</strong></p>
+<p>The next figure show the accumulation of rushing TDs for each RB.</p>
+<p><img src="oregon_rb_post_files/figure-html/cum-tds-1.png" width="768" /></p>
+<p>Again, James and Freeman really stand out from the pack, with Kenjon Barner pulling ahead of the lower tier group due to his longevity. Byron Marshall’s line flat lines as he started getting used more as a receiver than a runner.</p>
+</div>
+<div id="per-game-stats" class="section level2">
+<h2>Per Game Stats</h2>
+<p>As I mentioned above, it’s hard to compare cumulative stats between RBs when you have such a variation in how many total games they played. So, let’s look at their production on a per game basis. All the following figures will have the same following attributes:</p>
+<ul>
+<li>RB name will be on the x-axis (colors will match what was used above)</li>
+<li>Each point represents the given stat for a single game</li>
+<li>A point’s size is relative to the total number of carries for that game</li>
+<li>The black set of error bar represents the stand error around the mean for all games combined. <em>Importantly, games with more carries were given greater weight in order to downweight games in which an RB only had a few carries.</em></li>
+</ul>
+<p><strong>Rushing Yards &amp; TDs</strong></p>
+<p>The following figures show the rushing yards and touchdowns per game for each RB. If you were to calculate a regression line for the cumulative graphs above, the slope of that line should roughly correspond to the mean presented here (roughly because of the aforementioned weighting by carries).</p>
+<p><img src="oregon_rb_post_files/figure-html/rush-yds-tds-game-1.png" width="768" /></p>
+<p>I think this the left side of the graph above is the most telling so far because the weighting of the games by carries allows us to ignore games the RBs didn’t pay much in. As I mentioned in the QB post, while I didn’t run proper stats here, a good rule of thumb is that if the standard error intervals (the black error bars here) don’t overlap, there’s a good chance there’s a statistically significant difference in the means. Thus, based on yards per game, we see three tiers of running backs at Oregon in this time frame:</p>
+<ul>
+<li><em>Tier 1</em>: LaMichael James rushing for nearly 150 yards per game.</li>
+<li><em>Tier 2</em>: Freeman, Smith, Stewart, &amp; Barner, who rushed for over 100 per game</li>
+<li><em>Tier 3</em>: The rest, who did not average over 100 yards a game, but did have 100+ individual games. Tony Brooks-James has an opportunity this year to up his average.</li>
+</ul>
+<p>Looking at the touchdowns per game, the tiers aren’t nearly so obvious. Part of that is simply that it’s very rare for a running back to get more than three TDs in a a game (that 5 TD outlier from Barner was in the 2012 game against USC that we won 62-51). To my eye, the biggest discrepancy between yards per game and TDs per game is LeGarrette Blount, who goes from 8th to 2nd on this list.</p>
+</div>
+<div id="per-attempt-stats" class="section level2">
+<h2>Per Attempt Stats</h2>
+<p><strong>Rushing Yards</strong></p>
+<p>The figure below shows the average yards gained <em>per carry</em> in each game for each RB. So, each point still represents a single game, as in the figures above. Again, the error bars were calculated by giving greater weight to games with more attempts/carries.</p>
+<p><img src="oregon_rb_post_files/figure-html/rush-yds-car-1.png" width="768" /></p>
+<p>These two graphs show the same data, however those two major outliers (Thomas’s 155 yards on 2 carries in the 2012 Rose Bowl game against Wisconsin and Johnson’s game against Utah State in which he had 1 carry for 37 yards) make looking at the data difficult, so the right panel just excludes those points.</p>
+<p>This is the only stat so far where James is not on top, though there’s not much separation between him and the RBs above him. Thomas and Blount (the two most different RBs?) have a pretty large variance, but probably for very different reasons. Tony Brooks-James is the leader here and is looking to get significant carries, albeit behind Freeman. Let’s hope he continues this trend.</p>
+<p>So that’s it for the 2002-2016 Oregon running backs. I will do my best to update this in a timely matter by the end of the upcoming season. Sco’ Ducks!</p>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
