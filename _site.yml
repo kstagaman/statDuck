@@ -7,7 +7,7 @@ navbar:
       href: index.html
     - text: "About"
       href: about.html
-      - text: "Statistics"
+    - text: "Statistics"
       icon: fa-gear
       menu:
         - text: "QBs"

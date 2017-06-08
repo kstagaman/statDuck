@@ -1,8 +1,6 @@
 ---
 title: "Oregon Ducks QB career stats from 2002 to 2016"
-output: 
-  html_document: 
-    keep_md: no
+output: html_document
 ---
 
 ```{r chunk_opts, echo=FALSE}
