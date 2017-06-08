@@ -8,7 +8,6 @@ navbar:
     - text: "About"
       href: about.html
     - text: "Statistics"
-      icon: fa-gear
       menu:
         - text: "Oregon QBs"
           href: oregon_qb_post.html
