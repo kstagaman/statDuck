@@ -1,7 +1,5 @@
 ---
 title: "Oregon Ducks RB career stats from 2002 to 2016"
-author: "Keaton Stagaman"
-date: "November 5, 2016"
 output: html_document
 ---
 

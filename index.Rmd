@@ -2,7 +2,7 @@
 title: "Welcome to statDuck"
 ---
 
-Hello! I'm a postdoctoral researcher in biology, with an avid enthusiasm for my Oregon Ducks. I use R for statistics and data visualization in my daily work, but when I have time, I like to learn new things in R by messing around with some Ducks sports stats. This is where I've decided to put the stuff I've done that I think other people might be interested. I hope you enjoy it.
+I'm a postdoctoral researcher in biology with an avid enthusiasm for my Oregon Ducks. I use R for statistics and data visualization in my daily work, but when I have time, I like to learn new things in R by messing around with some Ducks sports stats. This is where I've decided to put the stuff I've done that I think other people might be interested. I hope you enjoy it.
 
 
 ```{r oregon_o, fig.width=8, fig.height=6.592, echo=FALSE}
