@@ -26,7 +26,7 @@ library(Hmisc)
 library(doBy)
 library(gridExtra)
 library(reshape2)
-source("../Helpful_scripts/mgsub.R")
+source("Helpful_scripts/mgsub.R")
 
 # Read in all data
 all.qbs <- read.table("oregon_qb_stats.txt",
