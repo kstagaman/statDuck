@@ -4,6 +4,7 @@ output: html_document
 ---
 
 ```{r chunk_opts, echo=FALSE}
+setwd("~/statDuck/")
 save.width <- 8
 save.height <- 6
 library(knitr)
